@@ -4,7 +4,7 @@ namespace JobManager;
 
 use JobManager\Job;
 
-abstract class JobManager {
+class JobManager {
     
     // Define preset log levels
     const ALERT = 'alert';
