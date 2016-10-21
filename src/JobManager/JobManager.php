@@ -115,7 +115,7 @@ class JobManager {
         $safeStatus = $this->db->real_escape_string($status);
         $created = time();
         $scheduled = $scheduled ?: time();
-        $safeScheduled = $db->real_escape_string($scheduled);
+        $safeScheduled = $this->db->real_escape_string($scheduled);
         
         $query = "INSERT INTO unprocessed_jobs(class, data, status, created, scheduled) VALUES('$safeClass', '$safeData', '$safeStatus', $created, $scheduled)";
         
