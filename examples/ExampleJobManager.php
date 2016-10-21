@@ -41,21 +41,17 @@ class ExampleJobManager extends JobManager\JobManager {
                 break;
             }
             
-            $this->log(parent::INFO, 'running job.', $job->getRequestID(), ['jobID' => $job->getJobID()]);
+            $this->info($job->getRequestID().' - running job.');
             $result = $job->run();
             
             // Log any errors we hit and run the next
-            if (!$result || !$result['success']) {
-                $this->log(
-                    parent::ALERT, 'error running job.', 
-                   $job->getRequestID(), 
-                   ['jobID' => $job->getJobID(), 'error' => $result['error']]
-                );
+            if (!$result || !$result['success']) {                
+                $this->alert($job->getRequestID().' - error running job');
                 
                 continue;
             }
             
-            $this->log(parent::INFO, 'successfully completed job.', $job->getRequestID(), ['jobID' => $job->getJobID()]);
+            $this->info($job->getRequestID().' - successfully completed job.');
         }
     }
 }

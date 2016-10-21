@@ -75,18 +75,18 @@ class JobManager {
         $requestID = uniqid();
         $query = "SELECT * FROM unprocessed_jobs WHERE scheduled<=$time AND status='PENDING' LIMIT 1";
 
-        $this->log(self::INFO, 'fetching new job', $requestID);
+        $this->info('Fetching new job');
 
         $result = $this->db->query($query);
 
         if (!$result) {
-            $this->log(self::ALERT, 'error fetching job', $requestID, ['error', $db->error]);
+            $this->alert('Error fetching job');
             return false;
         }
 
         if (!$result->num_rows) {
             //TODO: Log error that we could not get job here
-            $this->log(self::INFO, 'no jobs to fetch', $requestID);
+            $this->info('No jobs to fetch');
             return false;  
         }
 
@@ -95,7 +95,7 @@ class JobManager {
         $job = new Job($data['job_id'], $data['class'], json_decode($data['data']));
         $job->setDB($this->db);
         
-        $this->log(self::INFO, 'successfully fetched job.', $job->request_id, ['jobID' => $job->job_id]);
+        $this->info('Successfully fetched job - '.$job->request_id);
         
         return $job;
     }
