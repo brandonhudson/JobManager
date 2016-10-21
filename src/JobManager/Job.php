@@ -16,6 +16,7 @@
         // Default running status
         const STATUS_RUNNING = 'RUNNING';
 
+        // Define the namespace for Jobs
         const CLASS_NAMESPACE = 'JobManager\Jobs\\';
 
         /**

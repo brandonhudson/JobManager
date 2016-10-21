@@ -5,7 +5,6 @@
 * Each JobManager extension class must have a constructor.
 */
 class ExampleJobManager extends JobManager\JobManager {
-    
     // The default path of your logfile
     const DEFAULT_LOGFILE = '/path/to/home/connexuslogs/joblog';
     
@@ -20,7 +19,8 @@ class ExampleJobManager extends JobManager\JobManager {
         $this->connect('localhost', 'user', 'password', 'database');
         
         // We also call the JobManager constructor to set our logfile
-        parent::__construct(self::DEFAULT_LOGFILE);
+        parent::__construct();
+        $this->setLogPath(self::DEFAULT_LOGFILE);
     }
     
     /**
@@ -42,7 +42,6 @@ class ExampleJobManager extends JobManager\JobManager {
             }
             
             $this->log(parent::INFO, 'running job.', $job->getRequestID(), ['jobID' => $job->getJobID()]);
-            
             $result = $job->run();
             
             // Log any errors we hit and run the next

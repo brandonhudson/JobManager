@@ -4,18 +4,38 @@ namespace JobManager;
 
 use JobManager\Job;
 
-class JobManager {
+class JobManager {    
+    /**
+     * Constructs a new JobManager instance.
+     * 
+     * @private
+     */
+    function __construct() {
+        $this->logging_enabled = false;
+    }
     
-    // Define preset log levels
-    const ALERT = 'alert';
-    const WARN = 'warn';
-    const INFO = 'info';
-    const DEBUG = 'debug';
+    /**
+     * Sets the logging path for the jobs logs.
+     * 
+     * @param string $logPath
+     */
+    public function setLogPath($logPath = 'logs') {
+        $this->logger = new \Katzgrau\KLogger\Logger($logPath, \Psr\Log\LogLevel::DEBUG, array('filename' => 'joblog'));
+        $this->loggin_enabled = true;
+    }
     
-    const DEFAULT_LOG_FILE = 'joblog';
+    /**
+     * Enables logging.
+     */
+    public function enableLogging() {
+        $this->logging_enabled = true;
+    }
     
-    function __construct($logfile = null) {
-        $this->logfile = $logfile ?: self::DEFAULT_LOG_FILE;
+    /**
+     * Disables logging.
+     */
+    public function disableLogging() {
+        $this->logging_enabled = false;
     }
     
     /**
@@ -95,6 +115,7 @@ class JobManager {
         $safeStatus = $this->db->real_escape_string($status);
         $created = time();
         $scheduled = $scheduled ?: time();
+        $safeScheduled = $db->real_escape_string($scheduled);
         
         $query = "INSERT INTO unprocessed_jobs(class, data, status, created, scheduled) VALUES('$safeClass', '$safeData', '$safeStatus', $created, $scheduled)";
         
@@ -104,26 +125,58 @@ class JobManager {
         
         return true;
     }
-
+    
     /**
-     * Logs to the server.
+     * Logs an alert line in the job logs.
      * 
-     * @param string $level
      * @param string $message
-     * @param string $uid
+     */
+    public function alert($message) {
+        if (!$this->logging_enabled) {
+            return;
+        }
+        
+        $this->logger->alert($message);
+    }
+    
+    /**
+     * Logs a warning line in the job logs.
+     * 
+     * @param string $message
+     */
+    public function warn($message) {
+        if (!$this->logging_enabled) {
+            return;
+        }
+        
+        $this->logger->warning($message);
+    }
+    
+    /**
+     * Logs an info line in the job logs.
+     * 
+     * @param string $message
+     */
+    public function info($message) {
+        if (!$this->logging_enabled) {
+            return;
+        }
+        
+        $this->logger->info($message);
+    }
+    
+    /**
+     * Logs a debug line in the job logs.
+     * 
+     * @param string $message
      * @param array  $params
      */
-    public function log($level,$message, $uid = 'XXXXXXXXXXXXX', $params = []) {
-        date_default_timezone_set('Etc/UTC');
-        
-        $log = ''.date(DATE_ATOM).'  '.$uid.'  '.$level.'  '.$message;
-        
-        foreach($params as $key=>$value){
-            $log = $log . '  ['.$key.' = '.$value.']';
+    public function debug($message, $params = []) {
+        if (!$this->logging_enabled) {
+            return;
         }
-        $log = $log . "\n";
         
-        file_put_contents($this->logfile, $log, FILE_APPEND);
+        $this->logger->debug($message, $params);
     }
     
     /**
@@ -134,28 +187,23 @@ class JobManager {
         while (true) {
             $i++;
             $job = $this->fetch();
-            
+
             // Break if there are no jobs to run
             if (!$job) {
                 break;
             }
-            
-            $this->log(parent::INFO, 'running job.', $job->getRequestID(), ['jobID' => $job->getJobID()]);
-            
+
+            $this->info($job->getRequestID().' - running job');  
             $result = $job->run();
             
             // Log any errors we hit and run the next
             if (!$result || !$result['success']) {
-                $this->log(
-                    parent::ALERT, 'error running job.', 
-                   $job->getRequestID(), 
-                   ['jobID' => $job->getJobID(), 'error' => $result['error']]
-                );
-                
+                $this->alert($job->getRequestID().' - error running job');
+
                 continue;
             }
-            
-            $this->log(parent::INFO, 'successfully completed job.', $job->getRequestID(), ['jobID' => $job->getJobID()]);
+
+            $this->info($job->getRequestID().' - successfully completed job');
         }
     }
 }

@@ -3,9 +3,9 @@
 // This is an example of how to create a new job from anywhere in your codebase.
 require('_includes.php');
 
-
 // Running with no custom JobManager extension
-$manager = new JobManager('/path/to/logfile');
+$manager = new JobManager\JobManager();
+$manager->setLogPath('/path/to/logfile');
 $manager->connect('host', 'user', 'password', 'database');
 $manager->create();
 

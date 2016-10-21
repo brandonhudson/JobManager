@@ -9,7 +9,6 @@
     * Each job must have a constructor and a run method.
     */
     class ExampleJob {
-        
         /**
          * Constructs a new ExampleJob task.
          * The constructor always takes a data parameter, which is the data fetched from the db by the JobManager.

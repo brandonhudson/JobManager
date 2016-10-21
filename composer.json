@@ -1,0 +1,13 @@
+{
+    "name": "brandonhudson/jobmanager",
+    "description": "JobManager is a light-weight PHP job scheduling and processing framework.",
+    "type": "library",
+    "require": {
+        "katzgrau/klogger": "^1.2"
+    },
+    "autoload": {
+        "psr-4": { "JobManager\\": "src/JobManager" }
+    },
+    "license": "MIT",
+    "minimum-stability": "dev"
+}

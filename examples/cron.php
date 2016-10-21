@@ -3,9 +3,9 @@
 // This is an example of how easy it is to run an instance of a JobManager.
 require('_includes.php');
 
-
 // Running with no custom JobManager extension
-$manager = new JobManager('/path/to/logfile');
+$manager = new JobManager\JobManager();
+$manager->setLogPath('/path/to/logfile');
 $manager->connect('host', 'user', 'password', 'database');
 $manager->run();
 
