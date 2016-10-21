@@ -21,7 +21,7 @@ class JobManager {
      */
     public function setLogPath($logPath = 'logs') {
         $this->logger = new \Katzgrau\KLogger\Logger($logPath, \Psr\Log\LogLevel::DEBUG, array('filename' => 'joblog'));
-        $this->loggin_enabled = true;
+        $this->logging_enabled = true;
     }
     
     /**
